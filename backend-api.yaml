@@ -1,0 +1,550 @@
+openapi: 3.0.0
+x-stoplight:
+  id: xx22xy65civvc
+info:
+  title: backend-api
+  version: '1.0'
+  description: Backend api for capstone projec
+  contact:
+    name: Dimas Tri Mustakim
+    email: c151dsx1673@bangkit.academy
+    url: www.linkedin.com/in/dimastrim
+  license:
+    name: MIT
+    url: 'https://mit-license.org/'
+  termsOfService: github.com
+servers:
+  - url: 'http://localhost:3000'
+    description: localhost
+tags:
+  - name: Ungrouped
+    description: For endpoint that doesn't have exacp purposes.
+  - name: User
+    description: Everything needed for user.
+  - name: Image Analysis
+    description: Endpoint for face analysis using ML.
+  - name: Products
+    description: For function related to skincare product.
+paths:
+  /:
+    get:
+      summary: Home
+      tags:
+        - Ungrouped
+      responses:
+        '200':
+          description: Server is Running!
+      operationId: get
+      description: Test the server endpoint
+  /profile:
+    parameters: []
+    get:
+      summary: Get User Information
+      tags:
+        - User
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get User Alice Smith:
+                  value:
+                    id: 142
+                    firstName: Alice
+                    lastName: Smith
+                    email: alice.smith@gmail.com
+                    dateOfBirth: '1997-10-31'
+                    emailVerified: true
+                    signUpDate: '2019-08-24'
+        '404':
+          description: User Not Found
+      operationId: get-profile
+      description: Retrieve the information of the user.
+    patch:
+      summary: Update User Information
+      operationId: patch-users-userId
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+      description: Update the information of an existing user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  x-stoplight:
+                    id: xadyp3yy71ega
+                dateOfBirth:
+                  type: string
+                  x-stoplight:
+                    id: l0hr27nz6ze69
+                  format: date
+                skinType:
+                  type: string
+                  x-stoplight:
+                    id: 4u91ziddfo2st
+                skinCondition:
+                  type: string
+                  x-stoplight:
+                    id: 0uubw5qcheyw9
+            examples:
+              Update First Name:
+                value:
+                  firstName: Rebecca
+              Update Email:
+                value:
+                  email: rebecca@gmail.com
+              Update Last Name & Date of Birth:
+                value:
+                  lastName: Baker
+                  dateOfBirth: '1985-10-02'
+        description: Patch user properties to update.
+  /profile/uploadImage:
+    post:
+      summary: Renew the profile photo
+      responses:
+        '200':
+          description: Image uploaded successfully!
+      operationId: post-profile-uploadImage
+      description: Upload new profile photo.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  x-stoplight:
+                    id: i3dh3pxndgvyz
+          application/json:
+            schema:
+              type: object
+              properties: {}
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+          text/html:
+            schema:
+              type: object
+              properties: {}
+        description: ''
+      tags:
+        - User
+      deprecated: true
+    parameters: []
+  /products:
+    get:
+      summary: Getting a list of products available
+      responses:
+        '200':
+          description: Products data retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkincareProduct'
+      operationId: get-products
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: brand
+          description: get a specific brand
+        - schema:
+            type: number
+          in: query
+          name: limit
+          description: limit the result showed
+      description: To retrieve product list
+      tags:
+        - Products
+    parameters: []
+  '/products/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Getting specific product
+      responses:
+        '200':
+          description: Product data retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkincareProduct'
+      operationId: get-products-productId
+      description: Getting specific product information.
+      tags:
+        - Products
+  /products/recommendation:
+    get:
+      summary: Getting the list of recommendation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkincareProduct'
+      operationId: get-products-recommendation
+      tags:
+        - Products
+      requestBody:
+        content: {}
+      description: |-
+        getting list recommendation
+        # Informasi lebih lanjut
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: skinType
+          description: Skin type
+  /ml/analysis:
+    post:
+      summary: ''
+      operationId: post-ml-analysis
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogData'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  x-stoplight:
+                    id: w7wn58kqfjdmp
+        description: ''
+  /logs:
+    get:
+      summary: Getting a list of log analysis for the user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogData'
+      operationId: get-analyses
+      tags:
+        - Image Analysis
+    parameters: []
+  '/logs/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Getting the detail of the analysis
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogData'
+      operationId: get-analyses-id
+      description: ''
+      tags:
+        - Image Analysis
+  /articles:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+      operationId: get-article
+      description: Get list article
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      x-stoplight:
+        id: clha1giuy60l4
+      type: object
+      properties:
+        uid:
+          type: string
+          x-stoplight:
+            id: kuz0lpa2m5os9
+          format: uuid
+        name:
+          type: string
+          x-stoplight:
+            id: ay13yxek9i3k6
+        dateOfBirth:
+          type: string
+          x-stoplight:
+            id: s96vareozy6ge
+          format: date
+        email:
+          type: string
+          x-stoplight:
+            id: 8sp7w0xmxw6ih
+          format: email
+        photo:
+          type: string
+          x-stoplight:
+            id: c9kpki3d6ioyb
+          format: uri
+        skinType:
+          type: string
+          x-stoplight:
+            id: edzacs4jlitck
+        skinCondition:
+          type: string
+          x-stoplight:
+            id: k91c7n3fms51f
+    SkincareProduct:
+      title: SkincareProduct
+      x-stoplight:
+        id: fylzgxd7b478s
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: c45rxzqrnl7kb
+        image:
+          type: string
+          x-stoplight:
+            id: qywkbi6eho2yt
+        name:
+          type: string
+          x-stoplight:
+            id: ncs8dez2tt10r
+        brand:
+          type: string
+          x-stoplight:
+            id: zlqlt24ppynu8
+        ingredients:
+          type: string
+          x-stoplight:
+            id: zhglxlsmu1lf5
+        type:
+          type: string
+          x-stoplight:
+            id: gp7pe7cuqriz9
+        price:
+          type: string
+          x-stoplight:
+            id: 1eczlswyjfhrp
+        rank:
+          type: string
+          x-stoplight:
+            id: ifya5r929tcpi
+        skinCondition:
+          type: string
+          x-stoplight:
+            id: 6ss6f7zaxgh3v
+    SkincareBrand:
+      title: SkincareBrand
+      x-stoplight:
+        id: 9hbufdbe00m6z
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: swaya12qvoh71
+        name:
+          type: string
+          x-stoplight:
+            id: txarl3zx5plbd
+    Quest:
+      title: Quest
+      x-stoplight:
+        id: 1ammk5sn0f95s
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: qqotzkg30fkr4
+        name:
+          type: string
+          x-stoplight:
+            id: naa57ehfl3l5d
+        day:
+          type: string
+          x-stoplight:
+            id: eq3u38y4a0fd1
+        description:
+          type: string
+          x-stoplight:
+            id: 0qqxr0eqrsi8h
+    LogData:
+      title: LogData
+      x-stoplight:
+        id: emmwc2q9azhh5
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: uc7m5n48wk6yt
+        score:
+          type: string
+          x-stoplight:
+            id: 9p81x8ptmklb2
+        timestamp:
+          type: string
+          x-stoplight:
+            id: j12lubdclomfc
+        faceImage:
+          type: string
+          x-stoplight:
+            id: ujin84h7itua0
+        analysisResult:
+          x-stoplight:
+            id: nec7pm5xv7v0w
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageAnalysis'
+      x-examples:
+        Example 1:
+          id: string
+          score: string
+          timestamp: string
+          faceImage: string
+          analysisResult:
+            - id: string
+              image: string
+              problemCount: string
+              timestamp: string
+              category: acne
+            - id: string
+              image: string
+              problemCount: string
+              timestamp: string
+              category: flek
+            - id: string
+              image: string
+              problemCount: string
+              timestamp: string
+              category: wrinkles
+    ImageAnalysis:
+      title: ImageAnalysis
+      x-stoplight:
+        id: 9y80f2w4sh863
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: bv6hdqtehok5i
+        image:
+          type: string
+          x-stoplight:
+            id: ucv14aya932yb
+        problemCount:
+          type: string
+          x-stoplight:
+            id: 7lapuwpmxghig
+        timestamp:
+          type: string
+          x-stoplight:
+            id: 5cd5g5jet3g9u
+        category:
+          type: string
+          x-stoplight:
+            id: yx8y12twcxk46
+    Error:
+      title: Error
+      x-stoplight:
+        id: o0pw0tl7569dl
+      type: object
+      properties:
+        message:
+          type: string
+          x-stoplight:
+            id: o6aak990kw42l
+        url:
+          type: string
+          x-stoplight:
+            id: 739pa94rw7elc
+        status:
+          type: string
+          x-stoplight:
+            id: lbnqvb9zp1j4v
+    Article:
+      title: Article
+      x-stoplight:
+        id: t3r4bqs5a0d9e
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: xqwrg0gopv3bc
+          format: uuid
+        title:
+          type: string
+          x-stoplight:
+            id: 3o3ym0poda1m1
+        description:
+          type: string
+          x-stoplight:
+            id: httj1zawlrbaw
+        image:
+          type: string
+          x-stoplight:
+            id: pry1fijodie24
+          format: uri
+  securitySchemes:
+    userToken:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: 'https://petstore.swagger.io/oauth/authorize'
+          tokenUrl: ''
+          refreshUrl: ''
+          scopes: {}
+x-internal: false
